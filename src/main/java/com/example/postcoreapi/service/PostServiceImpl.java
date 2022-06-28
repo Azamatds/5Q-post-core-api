@@ -1,8 +1,11 @@
 package com.example.postcoreapi.service;
 
-import com.example.postcoreapi.model.PostModel;
+import com.example.postcoreapi.entity.PostEntity;
+import com.example.postcoreapi.repository.PostRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,41 +13,46 @@ import java.util.UUID;
 
 @Service
 public class PostServiceImpl implements PostService{
-    private static final HashMap<String,PostModel> model = new HashMap<>();
 
-    static {
-        PostModel postModel = new PostModel(UUID.randomUUID().toString(),"1","first","book","OK");
-        PostModel postMode2 = new PostModel(UUID.randomUUID().toString(),"2","second","laptop","OK");
-        PostModel postMode3 = new PostModel(UUID.randomUUID().toString(),"3","third","phone","OK");
+    @Autowired
+    private PostRepository postRepository;
 
-        model.put(postModel.getPostId(),postModel);
-        model.put(postMode2.getPostId(),postMode2);
-        model.put(postMode3.getPostId(),postMode3);
-    }
-    @Override
-    public void createPost(PostModel postModel) {
-        postModel.setPostId(UUID.randomUUID().toString());
-        model.put(postModel.getPostId(),postModel);
-    }
-
-    @Override
-    public List<PostModel> getAllPosts() {
-        return new ArrayList<>(model.values());
-    }
+//    private static final HashMap<String,PostModel> model = new HashMap<>();
+//
+//    static {
+//        PostModel postModel = new PostModel(UUID.randomUUID().toString(),"1","first","book","OK");
+//        PostModel postMode2 = new PostModel(UUID.randomUUID().toString(),"2","second","laptop","OK");
+//        PostModel postMode3 = new PostModel(UUID.randomUUID().toString(),"3","third","phone","OK");
+//
+//        model.put(postModel.getPostId(),postModel);
+//        model.put(postMode2.getPostId(),postMode2);
+//        model.put(postMode3.getPostId(),postMode3);
+//    }
 
     @Override
-    public PostModel getPostById(String postId) {
-        return model.get(postId);
+    public void createPost(PostEntity postEntity) {
+        postRepository.save(postEntity);
     }
 
     @Override
-    public void updatePostById(String postId,PostModel postModel) {
-        postModel.setPostId(postId);
-        model.put(postId,postModel);
+    public List<PostEntity> getAllPosts() {
+        return postRepository.findAll();
     }
 
     @Override
-    public void deletePostById(String postId) {
-        model.remove(postId);
+    public PostEntity getPostById(Long postId) {
+        return postRepository.findById(postId).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void updatePostById(Long postId,PostEntity post) {
+        post.setPostId(postId);
+        postRepository.save(post);
+    }
+
+    @Override
+    public void deletePostById(Long postId) {
+        postRepository.deleteById(postId);
     }
 }

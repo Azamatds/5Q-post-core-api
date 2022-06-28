@@ -1,6 +1,7 @@
 package com.example.postcoreapi.util;
 
-import com.example.postcoreapi.model.PostModel;
+
+import com.example.postcoreapi.entity.PostEntity;
 import com.example.postcoreapi.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,14 +20,14 @@ public class PostValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return PostModel.class.equals(clazz);
+        return PostEntity.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        PostModel p = (PostModel) target;
+        PostEntity p = (PostEntity) target;
 
-        if(postService.getPostById(p.getPostId()) == null){
+        if(postService.getAllPosts()== null){
             errors.rejectValue("fullPostId", "", "Пост с таким ид уже существует");
         }
 
